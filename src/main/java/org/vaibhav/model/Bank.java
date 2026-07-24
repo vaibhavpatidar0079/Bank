@@ -29,4 +29,12 @@ public class Bank{
         return Optional.ofNullable(accounts.get(accountNumber));
     }
 
+    public Map<Integer, Account> getAccounts() {
+        return accounts;
+    }
+
+    public void deleteAccount(int accountNumber) {
+        accounts.remove(accountNumber);
+    }
+
 }

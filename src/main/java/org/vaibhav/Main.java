@@ -1,54 +1,80 @@
 package org.vaibhav;
 
 import org.vaibhav.menu.Menu;
+import org.vaibhav.model.Bank;
+import org.vaibhav.service.BankService;
 
 import java.util.Scanner;
 
 public class Main {
-    static void main() {
-        Scanner sc = new Scanner(System.in);
-        while(true){
-            Menu.display();
-            Integer input = sc.nextInt();
-            switch (input) {
-                case 1:
-                    // Create Account
-                    break;
 
-                case 2:
-                    // Deposit Money
-                    break;
+    public static void main(String[] args) {
 
-                case 3:
-                    // Withdraw Money
-                    break;
+        Bank bank = new Bank();
+        BankService service = new BankService(bank);
 
-                case 4:
-                    // Transfer Money
-                    break;
+        while (true) {
+            int choice = Menu.showMainMenu();
 
-                case 5:
-                    // Check Balance
-                    break;
+            try {
+                switch (choice) {
+                    case 1 -> {
+                        String name = Menu.accountHolderName();
+                        double amount = Menu.initialDeposit();
 
-                case 6:
-                    // View Transaction History
-                    break;
+                        service.createAccount(name, amount);
+                    }
 
-                case 7:
-                    // List All Accounts
-                    break;
+                    case 2 -> {
+                        int accountNum = Menu.accountNumber();
+                        double amount = Menu.amount();
 
-                case 8:
-                    // Delete Account
-                    break;
+                        service.depositMoney(accountNum, amount);
+                    }
 
-                case 0:
-                    // Exit
-                    break;
+                    case 3 -> {
+                        int accountNum = Menu.accountNumber();
+                        double amount = Menu.amount();
 
-                default:
-                    System.out.println("Invalid choice.");
+                        service.withdrawMoney(accountNum, amount);
+                    }
+
+                    case 4 -> {
+                        int from = Menu.accountNumber();
+                        int to = Menu.destinationAccountNumber();
+                        double amount = Menu.amount();
+
+                        service.transferMoney(from, to, amount);
+                    }
+
+                    case 5 -> {
+                        int accountNum = Menu.accountNumber();
+
+                        service.viewBalance(accountNum);
+                    }
+
+                    case 6 -> {
+                        System.out.println("Transaction history is not implemented yet.");
+                    }
+
+                    case 7 -> service.listAccounts();
+
+                    case 8 -> {
+                        int accountNum = Menu.accountNumber();
+
+                        service.deleteAccount(accountNum);
+                    }
+
+                    case 0 -> {
+                        System.out.println("Thank you for using our Bank.");
+                        return;
+                    }
+
+                    default -> System.out.println("Invalid choice.");
+                }
+
+            } catch (IllegalArgumentException | IllegalStateException e) {
+                System.out.println(e.getMessage());
             }
         }
     }
