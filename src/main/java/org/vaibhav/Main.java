@@ -1,10 +1,7 @@
 package org.vaibhav;
 
-import org.vaibhav.model.Account;
 import org.vaibhav.model.Bank;
 import org.vaibhav.service.BankService;
-
-import java.util.Map;
 
 import static java.lang.Thread.sleep;
 
@@ -50,7 +47,7 @@ public class Main {
                 System.out.println(e.getMessage());
             }
         });
-        System.out.println(bank.totalAmmount());
+        System.out.println(bank.totalAmount());
         t1.start();
         t2.start();
         t3.start();
@@ -61,7 +58,7 @@ public class Main {
         t4. join();
 
 
-        System.out.println(bank.totalAmmount());
+        System.out.println(bank.totalAmount());
 
     }
 }

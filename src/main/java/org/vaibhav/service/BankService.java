@@ -13,8 +13,8 @@ public class BankService {
         this.bank = bank;
     }
 
-    public Account createAccount(String name, double initialAmount) throws InterruptedException {
-        Account account = bank.creatAccount(name, initialAmount);
+    public Account createAccount(String name, double initialAmount) {
+        Account account = bank.createAccount(name, initialAmount);
 
         System.out.println("Account created successfully.");
         System.out.println("Account Number : " + account.getAccountNumber());
@@ -22,7 +22,7 @@ public class BankService {
         return account;
     }
 
-    public void depositMoney(int accountNum, double amount) throws InterruptedException {
+    public void depositMoney(int accountNum, double amount) {
         Account account = bank.getAccount(accountNum)
                 .orElseThrow(() ->
                         new IllegalArgumentException("Account not found: " + accountNum));
