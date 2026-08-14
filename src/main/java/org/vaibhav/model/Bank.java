@@ -12,14 +12,10 @@ public class Bank{
         return nextAccountNumber++;
     }
 
-    public synchronized Account createAccount(String name, double initialAmount) {
-        Account a = new Account();
-        a.setHolderName(name);
-        a.deposit(initialAmount);
-
+    public synchronized Account createAccount(String name, double initialAmount){
         int accountNumber = generateAccountNumber();
-        a.setAccountNumber(accountNumber);
 
+        Account a = new Account(accountNumber,name, initialAmount);
         accounts.put(accountNumber,a);
 
         return a;

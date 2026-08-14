@@ -1,9 +1,19 @@
 package org.vaibhav.model;
 
 public class Account{
-    private int accountNumber;
-    private String holderName;
+    private final int accountNumber;
+    private final String holderName;
     private double balance;
+
+    public Account(int accountNumber, String holderName, double initialAmount) {
+        if(initialAmount >= 0) this.balance = initialAmount;
+        else{
+            throw new IllegalArgumentException("amount can not be negative");
+        }
+        this.accountNumber = accountNumber;
+        this.holderName = holderName;
+
+    }
 
     public synchronized void deposit(double amount) {
         if(amount >0) this.balance += amount;
@@ -22,21 +32,10 @@ public class Account{
         return this.balance;
     }
 
-    public void setAccountNumber(int number) {
-        if (this.accountNumber != 0) {
-            throw new IllegalStateException("Account number is already assigned.");
-        }
-
-        this.accountNumber = number;
-    }
-
     public int getAccountNumber(){
         return accountNumber;
     }
 
-    public void setHolderName(String name){
-        this.holderName = name;
-    }
     public String getHolderName(){
         return this.holderName;
     }
