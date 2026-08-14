@@ -54,8 +54,21 @@ public class BankService {
                 .orElseThrow(() ->
                         new IllegalArgumentException("Account not found: " + destinationAccNum));
 
-        from.withdraw(amount);
-        to.deposit(amount);
+        Account first;
+        Account second;
+        if(fromAccNum < destinationAccNum){
+            first = from;
+            second = to;
+        }else{
+            first = to;
+            second = from;
+        }
+        synchronized (first){
+            synchronized (second){
+                from.withdraw(amount);
+                to.deposit(amount);
+            }
+        }
 
         System.out.println("Transfer successful.");
     }
