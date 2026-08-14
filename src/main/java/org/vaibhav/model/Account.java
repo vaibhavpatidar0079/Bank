@@ -5,17 +5,17 @@ public class Account{
     private String holderName;
     private double balance;
 
-    public void deposit(double amount){
+    public synchronized void deposit(double amount) {
         if(amount >0) this.balance += amount;
         else{throw new IllegalArgumentException("Deposit amount must be positive.");}
     }
 
-    public void withdraw(double amount){
+    public synchronized void withdraw(double amount){
         if(amount > 0){
             if(this.balance < amount) throw new IllegalArgumentException("Insufficient balance.");
             this.balance -= amount;
         }
-        else{throw new IllegalArgumentException("Withraw ammount cant be negative");}
+        else{throw new IllegalArgumentException("Withdraw amount cant be negative.");}
     }
 
     public double getBalance(){

@@ -12,7 +12,7 @@ public class Bank{
         return nextAccountNumber++;
     }
 
-    public Account creatAccount(String name, double initialAmmount){
+    public synchronized Account creatAccount(String name, double initialAmmount) throws InterruptedException {
         Account a = new Account();
         a.setHolderName(name);
         a.deposit(initialAmmount);
@@ -35,6 +35,14 @@ public class Bank{
 
     public void deleteAccount(int accountNumber) {
         accounts.remove(accountNumber);
+    }
+
+    public synchronized double totalAmmount(){
+        double total = 0;
+        for (Account account : accounts.values()) {
+            total += account.getBalance();
+        }
+        return total;
     }
 
 }
