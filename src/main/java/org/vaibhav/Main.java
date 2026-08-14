@@ -47,18 +47,19 @@ public class Main {
                 System.out.println(e.getMessage());
             }
         });
-        System.out.println(bank.totalAmount());
+        System.out.println("total: " + bank.totalAmount());
         t1.start();
         t2.start();
         t3.start();
         t4.start();
+        System.out.println("total: " + bank.totalAmount());
         t1.join();
         t2.join();
         t3.join();
         t4. join();
+        System.out.println("total: " + bank.totalAmount());
 
 
-        System.out.println(bank.totalAmount());
 
     }
 }

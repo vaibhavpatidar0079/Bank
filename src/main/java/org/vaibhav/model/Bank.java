@@ -1,8 +1,6 @@
 package org.vaibhav.model;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class Bank{
     private Map<Integer, Account> accounts = new HashMap<>();
@@ -21,24 +19,39 @@ public class Bank{
         return a;
     }
 
-    public Optional<Account> getAccount(int accountNumber){
+    public synchronized Optional<Account> getAccount(int accountNumber){
         return Optional.ofNullable(accounts.get(accountNumber));
     }
 
-    public Map<Integer, Account> getAccounts() {
-        return accounts;
+    public synchronized Map<Integer, Account> getAccounts() {
+        return new HashMap<>(accounts);
     }
 
-    public void deleteAccount(int accountNumber) {
+    public synchronized void deleteAccount(int accountNumber) {
         accounts.remove(accountNumber);
     }
 
     public synchronized double totalAmount(){
-        double total = 0;
-        for (Account account : accounts.values()) {
-            total += account.getBalance();
+        Map<Integer, Account> accounts = getAccounts();
+        List<Integer> sortedAccountsNum = new ArrayList<>(accounts.keySet());
+
+        sortedAccountsNum.sort(Comparator.naturalOrder());
+        for(int i: sortedAccountsNum){
+            accounts.get(i).lock();
         }
-        return total;
+        try {
+            double total = 0;
+            for (int i : sortedAccountsNum) {
+                total += accounts.get(i).getBalance();
+            }
+            return total;
+
+        }finally {
+            for (int i : sortedAccountsNum) {
+                accounts.get(i).unlock();
+            }
+        }
+
     }
 
 }

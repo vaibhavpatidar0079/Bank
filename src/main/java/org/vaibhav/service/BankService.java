@@ -54,6 +54,7 @@ public class BankService {
                 .orElseThrow(() ->
                         new IllegalArgumentException("Account not found: " + destinationAccNum));
 
+        //lock order rule: lower account number -> higher account number
         Account first;
         Account second;
         if(fromAccNum < destinationAccNum){
@@ -63,11 +64,16 @@ public class BankService {
             first = to;
             second = from;
         }
-        synchronized (first){
-            synchronized (second){
-                from.withdraw(amount);
-                to.deposit(amount);
-            }
+
+        first.lock();
+        second.lock();
+        try{
+            from.withdraw(amount);
+            to.deposit(amount);
+        }finally {
+            second.unlock();
+            first.unlock();
+
         }
 
         System.out.println("Transfer successful.");
@@ -103,17 +109,23 @@ public class BankService {
     }
 
     public void deleteAccount(int accountNum) {
+        //lock order rule: bank -> account
+        synchronized (bank) {
+            Account account = bank.getAccount(accountNum)
+                    .orElseThrow(() ->
+                            new IllegalArgumentException("Account not found: " + accountNum));
 
-        Account account = bank.getAccount(accountNum)
-                .orElseThrow(() ->
-                        new IllegalArgumentException("Account not found: " + accountNum));
-
-        if (account.getBalance() != 0) {
-            throw new IllegalArgumentException(
-                    "Account cannot be deleted unless balance is zero.");
+            account.lock();
+            try{
+                if (account.getBalance() != 0.0) {
+                    throw new IllegalStateException(
+                            "Account cannot be deleted unless balance is zero.");
+                }
+                bank.deleteAccount(accountNum);
+            }finally {
+                account.unlock();
+            }
         }
-
-        bank.deleteAccount(accountNum);
 
         System.out.println("Account deleted successfully.");
     }
