@@ -27,30 +27,19 @@ public class Bank{
         return new HashMap<>(accounts);
     }
 
-    public synchronized void deleteAccount(int accountNumber) {
-        accounts.remove(accountNumber);
-    }
-
-    public synchronized double totalAmount(){
-        Map<Integer, Account> accounts = getAccounts();
-        List<Integer> sortedAccountsNum = new ArrayList<>(accounts.keySet());
-
-        sortedAccountsNum.sort(Comparator.naturalOrder());
-        for(int i: sortedAccountsNum){
-            accounts.get(i).lock();
-        }
+    public synchronized void deleteAccount(Account account){
+        //lock order rule: bank -> account
+        account.lock();
         try {
-            double total = 0;
-            for (int i : sortedAccountsNum) {
-                total += accounts.get(i).getBalance();
+            if (account.getBalance() != 0.0) {
+                throw new IllegalStateException(
+                        "Account cannot be deleted unless balance is zero.");
             }
-            return total;
-
-        }finally {
-            for (int i : sortedAccountsNum) {
-                accounts.get(i).unlock();
-            }
+            accounts.remove(account.getAccountNumber());
+        } finally {
+            account.unlock();
         }
+
 
     }
 

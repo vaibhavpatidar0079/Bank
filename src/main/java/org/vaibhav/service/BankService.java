@@ -3,7 +3,7 @@ package org.vaibhav.service;
 import org.vaibhav.model.Account;
 import org.vaibhav.model.Bank;
 
-import java.util.Map;
+import java.util.*;
 
 public class BankService {
 
@@ -44,7 +44,7 @@ public class BankService {
         System.out.println("Current Balance : " + account.getBalance());
     }
 
-    public void transferMoney(int fromAccNum, int destinationAccNum, double amount){
+    public void transferMoney(int fromAccNum, int destinationAccNum, double amount) {
 
         Account from = bank.getAccount(fromAccNum)
                 .orElseThrow(() ->
@@ -57,20 +57,20 @@ public class BankService {
         //lock order rule: lower account number -> higher account number
         Account first;
         Account second;
-        if(fromAccNum < destinationAccNum){
+        if (fromAccNum < destinationAccNum) {
             first = from;
             second = to;
-        }else{
+        } else {
             first = to;
             second = from;
         }
 
         first.lock();
         second.lock();
-        try{
+        try {
             from.withdraw(amount);
             to.deposit(amount);
-        }finally {
+        } finally {
             second.unlock();
             first.unlock();
 
@@ -108,25 +108,36 @@ public class BankService {
         }
     }
 
-    public void deleteAccount(int accountNum) {
-        //lock order rule: bank -> account
-        synchronized (bank) {
-            Account account = bank.getAccount(accountNum)
-                    .orElseThrow(() ->
-                            new IllegalArgumentException("Account not found: " + accountNum));
+    public double totalAmount() {
+        Map<Integer, Account> accounts = bank.getAccounts();
+        List<Integer> sortedAccountsNum = new ArrayList<>(accounts.keySet());
 
-            account.lock();
-            try{
-                if (account.getBalance() != 0.0) {
-                    throw new IllegalStateException(
-                            "Account cannot be deleted unless balance is zero.");
-                }
-                bank.deleteAccount(accountNum);
-            }finally {
-                account.unlock();
+        sortedAccountsNum.sort(Comparator.naturalOrder());
+        for (int i : sortedAccountsNum) {
+            accounts.get(i).lock();
+        }
+        try {
+            double total = 0;
+            for (int i : sortedAccountsNum) {
+                total += accounts.get(i).getBalance();
+            }
+            return total;
+
+        } finally {
+            for (int i : sortedAccountsNum) {
+                accounts.get(i).unlock();
             }
         }
+    }
 
+
+    public void deleteAccount(int accountNum) {
+        Account account = bank.getAccount(accountNum)
+                .orElseThrow(() ->
+                        new IllegalArgumentException("Account number is invalid"));
+
+        bank.deleteAccount(account);
         System.out.println("Account deleted successfully.");
+
     }
 }
