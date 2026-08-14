@@ -1,7 +1,11 @@
 package org.vaibhav;
 
+import org.vaibhav.concurrency.BankSimulation;
+import org.vaibhav.concurrency.TransferTask;
 import org.vaibhav.model.Bank;
 import org.vaibhav.service.BankService;
+
+import java.util.concurrent.*;
 
 import static java.lang.Thread.sleep;
 
@@ -12,54 +16,19 @@ public class Main {
         Bank bank = new Bank();
         BankService service = new BankService(bank);
 
-        for(int i =1; i<=10; i++){
-            service.createAccount("name"+i,1000);
+        for(int i = 0; i<500; i++){
+            service.createAccount("name" + i+1, 100);
         }
+        double totalInitial = service.totalAmount();
+        BankSimulation s = new BankSimulation(service);
+        s.run();
+        double totalFinal = service.totalAmount();
 
-        Thread t1 = new Thread(() -> {
-            try {
-                service.transferMoney(1001, 1005, 100);
-            } catch (IllegalArgumentException e) {
-                System.out.println(e.getMessage());
-            }
-        });
-
-        Thread t2 = new Thread(() -> {
-            try {
-                service.transferMoney(1005, 1002, 100);
-            } catch (IllegalArgumentException e) {
-                System.out.println(e.getMessage());
-            }
-        });
-
-        Thread t3 = new Thread(() -> {
-            try {
-                service.transferMoney(1001, 1008, 100);
-            } catch (IllegalArgumentException e) {
-                System.out.println(e.getMessage());
-            }
-        });
-
-        Thread t4 = new Thread(() -> {
-            try {
-                service.transferMoney(1008, 1001, 100);
-            } catch (IllegalArgumentException  e) {
-                System.out.println(e.getMessage());
-            }
-        });
-        System.out.println("total: " + service.totalAmount());
-        t1.start();
-        t2.start();
-        t3.start();
-        t4.start();
-        System.out.println("total: " + service.totalAmount());
-        t1.join();
-        t2.join();
-        t3.join();
-        t4. join();
-        System.out.println("total: " + service.totalAmount());
-
-
-
+        if(totalInitial == totalFinal){
+            System.out.println("Total initial amount is equal to final: " + totalFinal);
+        }else{
+            System.out.println("fucked");
+            System.out.printf("initial amount: "+ totalInitial +", final: "+ totalFinal);
+        }
     }
 }

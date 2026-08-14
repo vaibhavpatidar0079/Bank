@@ -76,7 +76,7 @@ public class BankService {
 
         }
 
-        System.out.println("Transfer successful.");
+        System.out.println("amount "+amount+" transferred from "+ fromAccNum +" to "+ destinationAccNum + " successfully");
     }
 
     public void viewBalance(int accountNum) {
