@@ -1,9 +1,10 @@
 package org.vaibhav.concurrency;
 
-import org.vaibhav.model.Bank;
 import org.vaibhav.service.BankService;
 
-public class TransferTask implements Runnable {
+import java.util.concurrent.Callable;
+
+public class TransferTask implements Callable<Boolean> {
     private final BankService service;
     private final int from;
     private final int to;
@@ -16,7 +17,15 @@ public class TransferTask implements Runnable {
         this.amount = amount;
     }
     @Override
-    public void run(){
-        service.transferMoney(from,to,amount);
+    public Boolean call() throws Exception {
+        try {
+            return service.transferMoney(from, to, amount);
+        } catch (Exception e) {
+            throw new Exception(
+                    "Transfer failed from " + from + " to " + to +
+                            " for amount " + amount,
+                    e
+            );
+        }
     }
 }

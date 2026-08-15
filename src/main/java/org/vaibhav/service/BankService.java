@@ -44,7 +44,7 @@ public class BankService {
         System.out.println("Current Balance : " + account.getBalance());
     }
 
-    public void transferMoney(int fromAccNum, int destinationAccNum, double amount) {
+    public Boolean transferMoney(int fromAccNum, int destinationAccNum, double amount) {
 
         Account from = bank.getAccount(fromAccNum)
                 .orElseThrow(() ->
@@ -75,8 +75,8 @@ public class BankService {
             first.unlock();
 
         }
-
-        System.out.println("amount "+amount+" transferred from "+ fromAccNum +" to "+ destinationAccNum + " successfully");
+        System.out.println("amount " + amount + " transferred from " + fromAccNum + " to " + destinationAccNum + " successfully");
+        return true;
     }
 
     public void viewBalance(int accountNum) {

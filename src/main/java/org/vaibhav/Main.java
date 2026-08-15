@@ -11,7 +11,7 @@ import static java.lang.Thread.sleep;
 
 public class Main {
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, ExecutionException {
 
         Bank bank = new Bank();
         BankService service = new BankService(bank);
@@ -21,14 +21,21 @@ public class Main {
         }
         double totalInitial = service.totalAmount();
         BankSimulation s = new BankSimulation(service);
-        s.run();
-        double totalFinal = service.totalAmount();
+        s.start();
+        System.out.println("finished: " + s.isFinished());
+        s.awaitCompletion();
+        System.out.println("all finished.");
 
+        double totalFinal = service.totalAmount();
         if(totalInitial == totalFinal){
             System.out.println("Total initial amount is equal to final: " + totalFinal);
-        }else{
-            System.out.println("fucked");
-            System.out.printf("initial amount: "+ totalInitial +", final: "+ totalFinal);
+        }else {
+            System.out.println("Total initial amount is NOT equal to final.");
+            System.out.printf(
+                    "Initial amount: %.2f, Final amount: %.2f%n",
+                    totalInitial,
+                    totalFinal
+            );
         }
     }
 }
