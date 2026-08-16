@@ -1,13 +1,11 @@
 package org.vaibhav;
 
+
 import org.vaibhav.concurrency.BankSimulation;
-import org.vaibhav.concurrency.TransferTask;
 import org.vaibhav.model.Bank;
 import org.vaibhav.service.BankService;
 
-import java.util.concurrent.*;
-
-import static java.lang.Thread.sleep;
+import java.util.concurrent.ExecutionException;
 
 public class Main {
 
@@ -22,6 +20,7 @@ public class Main {
         double totalInitial = service.totalAmount();
         BankSimulation s = new BankSimulation(service);
         s.start();
+
         System.out.println("finished: " + s.isFinished());
         s.awaitCompletion();
         System.out.println("all finished.");
@@ -37,5 +36,12 @@ public class Main {
                     totalFinal
             );
         }
+        Thread.sleep(2000);
+        s.calculateResults();
+        System.out.println(
+                "total submitted: " + s.getSubmitted()+
+                        " success: " + s.getSuccess() +
+                        " failed: " + s.getFailed()
+        );
     }
 }
